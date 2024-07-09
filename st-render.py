@@ -31,15 +31,14 @@ if 'suites' in st.session_state:
                                                    placeholder="Expand dropdown ...",)
 
     if st.session_state.selected_suite is not None:
-        with st.spinner('Fetching test data ...'):
-            st.session_state.suite_result_df = gi.suite_results(st.session_state.suites, 
-                                            st.session_state.selected_suite, 
-                                            api_key)
-
+        # Fetch results button
+        if st.button("Fetch Results"):
+            with st.spinner('Fetching test data ...'):
+                st.session_state.suite_result_df = gi.suite_results(st.session_state.suites, 
+                                                                    st.session_state.selected_suite, 
+                                                                    api_key)
             if 'suite_result_df' in st.session_state:
-                # Fetch results button
-                if st.button("Fetch Results"):
-                    st.header(st.session_state.selected_suite)
-                    st.write(st.session_state.suite_result_df)
-                else:
-                    st.error("Error fetching results. Please check your test ID and API key.")
+                st.header(st.session_state.selected_suite)
+                st.write(st.session_state.suite_result_df)
+            else:
+                st.error("Error fetching results. Please check your test ID and API key.")
