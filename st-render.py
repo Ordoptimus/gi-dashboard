@@ -18,27 +18,42 @@ api_key = st.sidebar.text_input("Enter your API key:")
 
 # API calls
 if st.button("Connect to Ghost Inspector"):
-    with st.spinner('Fetching list of test suites ...'):
-        all_tests = gi.fetch_all(api_key)
-        st.session_state.suites = gi.parse_tests(all_tests)
+    with st.spinner('Fetching list of test folders ...'):
+        # fetching folder name-id dictionary
+        st.session_state.all_folders = gi.fetch_folders(api_key)
+        # st.session_state.suites = gi.parse_tests(all_tests)
 
-if 'suites' in st.session_state:
-    # Create a dropdown select box
-    suite_options = sorted([suite for suite in st.session_state.suites.keys()])
-    st.session_state.selected_suite = st.selectbox('Pick a suite to view its test results:', 
-                                                   suite_options, 
+if 'all_folders' in st.session_state:
+    # Folders dropdown
+    folder_options = sorted([folder for folder in st.session_state.all_folders.keys()])
+    st.session_state.selected_folder = st.selectbox('Pick a folder to view its test suites:', 
+                                                   folder_options, 
                                                    index=None, 
                                                    placeholder="Expand dropdown ...",)
 
-    if st.session_state.selected_suite is not None:
-        # Fetch results button
-        if st.button("Fetch Results"):
-            with st.spinner('Fetching test data ...'):
-                st.session_state.suite_result_df = gi.suite_results(st.session_state.suites, 
-                                                                    st.session_state.selected_suite, 
-                                                                    api_key)
-            if 'suite_result_df' in st.session_state:
-                st.header(st.session_state.selected_suite)
-                st.write(st.session_state.suite_result_df)
-            else:
-                st.error("Error fetching results. Please check your test ID and API key.")
+    if st.session_state.selected_folder is not None:
+        # Fetch suites button
+        if st.button("Fetch Suites"):
+            with st.spinner('Fetching suite data ...'):
+                # fetching suite name-id dictionary
+                folder_id = st.session_state.all_folders[st.session_state.selected_folder]
+                st.session_state.suite_dict = gi.folder_suites(folder_id, api_key)
+                
+        if "suite_dict" in st.session_state:
+            # Suites dropdown
+            suite_options = sorted([suite for suite in st.session_state.suite_dict.keys()])
+            st.session_state.selected_suite = st.selectbox('Pick a suite to view its tests with results:', 
+                                                suite_options, 
+                                                index=None, 
+                                                placeholder="Expand dropdown ...",)
+            
+            if st.session_state.selected_suite is not None:
+                with st.spinner('Fetching test data ...'):
+                    suite_id = st.session_state.suite_dict[st.session_state.selected_suite]
+                    st.session_state.suite_result_df = gi.suite_results(suite_id, api_key)
+
+                if 'suite_result_df' in st.session_state:
+                    st.header(st.session_state.selected_suite)
+                    st.write(st.session_state.suite_result_df)
+                else:
+                    st.error("Error fetching results. Please check your test ID and API key.")

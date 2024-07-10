@@ -115,7 +115,7 @@ api_key = st.sidebar.text_input("Enter your API key:")
 # API calls
 if st.button("Connect to Ghost Inspector"):
     with st.spinner('Fetching list of test suites ...'):
-        all_tests = gi.fetch_all(api_key)
+        all_tests = gi.fetch_suite_tests(api_key)
         st.session_state.suites = gi.parse_tests(all_tests)
 
 if 'suites' in st.session_state:
