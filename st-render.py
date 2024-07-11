@@ -21,9 +21,12 @@ if st.button("Connect to Ghost Inspector"):
     with st.spinner('Fetching list of test folders ...'):
         # fetching folder name-id dictionary
         st.session_state.all_folders = gi.fetch_folders(api_key)
-        # st.session_state.suites = gi.parse_tests(all_tests)
+        if isinstance(st.session_state.all_folders, dict) is False:
+            st.session_state.all_folders = None
+            st.error("Error connecting. Please check your API key.")
 
-if 'all_folders' in st.session_state:
+
+if 'all_folders' in st.session_state and st.session_state.all_folders is not None:
     # Folders dropdown
     folder_options = sorted([folder for folder in st.session_state.all_folders.keys()])
     st.session_state.selected_folder = st.selectbox('Pick a folder to view its test suites:', 

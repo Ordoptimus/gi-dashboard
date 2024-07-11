@@ -62,7 +62,7 @@ def fetch_folders(api_key):
         return all_folders
     except Exception as e:
         print(f"Error fetching folder IDs and names: {e}")
-        return {}
+        return e
 
 
 def folder_suites(folder_id, api_key):
