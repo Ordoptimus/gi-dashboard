@@ -1,42 +1,3 @@
-'''
-Sample O/P for fetch_all:
-
-response = {
-  "code": "SUCCESS",
-  "data": [
-    {
-      "_id": "5db700c6881b5f7978697da9",
-      "suite": {
-        "_id": "5a1e1b90154014760af39ef5",
-        "name": "Smoke Tests"
-      },
-    },
-    {
-      "_id": "5e2a0b342d0f5947444c31fc",
-      "suite": {
-        "_id": "5a1e1b90154014760af39ef5",
-        "name": "Smoke Tests"
-      },
-    },
-    {
-      "_id": "5db700c6881b5f7978697da9",
-      "suite": {
-        "_id": "5a1e1b90154014760af39ef5",
-        "name": "Sanity Tests"
-      },
-    },
-    {
-      "_id": "5e2a0b342d0f5947444c31fc",
-      "suite": {
-        "_id": "5a1e1b90154014760af39ef5",
-        "name": "Sanity Tests"
-      },
-    }
-  ]
-}
-'''
-
-
 import requests
 import io
 import pandas as pd
@@ -117,14 +78,42 @@ def csv_tests(test_id, api_key):
     Fetching individual test results as CSV
     '''
     api_endpoint = f"https://api.ghostinspector.com/v1/tests/{test_id}/results/csv/?apiKey={api_key}"
+    params = {"apiKey": api_key, "count": 1}
 
     try:
-        response = requests.get(api_endpoint.format(test_id, api_key))
+        response = requests.get(api_endpoint, params=params)
         # if response.status_code == 200:
         df = pd.read_csv(io.StringIO(response.text))
         return df
     except Exception as e:
         print(f"Error listing result for test ID {test_id}: {e}")
+
+
+def format_df(df):
+    '''
+    Formats the result_df to remove extraneous columns and rearrange important ones
+    '''
+    df = df.drop(columns=['Test Result ID', 
+                          'Browser', 
+                          'Screen Size', 
+                          'Geolocation', 
+                          'Start URL', 
+                          'End URL', 
+                          'Status', 
+                          'Date Triggered'])
+    priority_cols = ['Name',
+                    'Passed', 
+                    'Screenshot Passed',
+                    'Screenshot Difference',
+                    'Test Result URL',
+                    'Screenshot Comparison URL',
+                    'Date Completed',
+                    'Video URL'
+                    ]
+    remaining_cols = [col for col in df.columns.to_list() if col not in priority_cols]
+    priority_cols.extend(remaining_cols)
+    df = df.reindex(columns=priority_cols)
+    return df
 
 
 def suite_results(suite_id, api_key):
@@ -146,11 +135,11 @@ def suite_results(suite_id, api_key):
         print(f"Error fetching test IDs and suites: {e}")
 
     result_df = pd.DataFrame()
-
     for id in test_list:
         df = csv_tests(id, api_key)
         result_df = pd.concat([result_df, df])
-    return result_df
+
+    return format_df(result_df)
 
 
 #deprecated
