@@ -29,7 +29,6 @@ def fetch_folders(api_key):
 def folder_suites(folder_id, api_key):
     '''
     Fetches a list of all suites for a folder, in JSON, abridged to suite_id, suite_name
-    WIP
     '''
     api_endpoint = f"https://api.ghostinspector.com/v1/folders/{folder_id}/suites/?apiKey={api_key}"
 
@@ -47,29 +46,6 @@ def folder_suites(folder_id, api_key):
         return suite_dict
     except Exception as e:
         print(f"Error fetching suite IDs and names: {e}")
-        return {}
-
-
-def fetch_suite_tests(api_key):
-    '''
-    Fetches a comprehensive list of all tests in JSON, abridged to test_id and suite
-    '''
-    api_endpoint = f"https://api.ghostinspector.com/v1/tests/?apiKey={api_key}"
-
-    try:
-        response = requests.get(api_endpoint.format(api_key))
-        response_json = response.json()
-
-        all_tests = {}
-        for test in response_json["data"]:
-            test_id = test.get("_id")
-            suite = test.get("suite")
-            if test_id and suite:
-                all_tests[test_id] = suite["name"]
-
-        return all_tests
-    except Exception as e:
-        print(f"Error fetching test IDs and suites: {e}")
         return {}
 
 
@@ -113,6 +89,7 @@ def format_df(df):
     remaining_cols = [col for col in df.columns.to_list() if col not in priority_cols]
     priority_cols.extend(remaining_cols)
     df = df.reindex(columns=priority_cols)
+    df['Screenshot Difference'] *= 100  # converting back to percentage form
     return df
 
 
@@ -155,7 +132,6 @@ def parse_tests(all_tests):
             suite_dict[suite].append(test_id)
     return suite_dict
 
-
 # deprecated
 def test_iterate(suite_dict, api_key):
     '''
@@ -172,3 +148,26 @@ def test_iterate(suite_dict, api_key):
         print(f"Results per suite: {suite_results}")
 
     return suite_results
+
+# deprecated
+def fetch_suite_tests(api_key):
+    '''
+    Fetches a comprehensive list of all tests in JSON, abridged to test_id and suite
+    '''
+    api_endpoint = f"https://api.ghostinspector.com/v1/tests/?apiKey={api_key}"
+
+    try:
+        response = requests.get(api_endpoint.format(api_key))
+        response_json = response.json()
+
+        all_tests = {}
+        for test in response_json["data"]:
+            test_id = test.get("_id")
+            suite = test.get("suite")
+            if test_id and suite:
+                all_tests[test_id] = suite["name"]
+
+        return all_tests
+    except Exception as e:
+        print(f"Error fetching test IDs and suites: {e}")
+        return {}
