@@ -1,6 +1,8 @@
 import streamlit  as st
 import pandas as pd
 
+import api.suites as gi
+
 st.set_page_config(
     page_title="Suite Creator"
 )
@@ -53,13 +55,29 @@ csv_payload = st.file_uploader("Upload CSV")
 if csv_payload is not None:
     df = pd.read_csv(csv_payload)
 
-    for index, row in df.iterrows():
-        clone_test_id = row['clone-test-id']
-        test_name = row['test-name']
-        starting_url = row['starting-url']
-        starting_url = starting_url.replace("$baseUrl", base_url)
-
-    # Button to add variable to the dictionary
+    # Button to create and update suite
     if st.button("Create Suite"):
-        # Invoke suite creation function
-        None
+        master_params = {
+            'organization': org_id,
+            'name': suite_name,
+            'details': suite_description,
+            'base_url': base_url,
+            'folder': folder_id,
+            'variables': st.session_state.variables_dict
+            }
+        try:
+            suites = gi.Suites(master_params, api_key)
+            new_suite_id = suites.suite_id
+        except Exception as e:
+            print(f"Error creating suite: {e}")
+    
+        # creating and updating tests for each row
+        for index, row in df.iterrows():
+            test_params = {}
+            test_params['test_id'] = row['clone-test-id']
+            test_params['test_name'] = row['test-name']
+            test_params['start_url'] = row['starting-url'].replace("$baseUrl", base_url)
+            test_params['suite_id'] = new_suite_id
+            
+            new_test_id = gi.duplicate_test(test_params['test_id'], api_key)
+            gi.update_test(new_test_id, test_params, api_key)
