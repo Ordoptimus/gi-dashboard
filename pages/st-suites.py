@@ -90,7 +90,7 @@ if csv_payload is not None:
             print(f"Error creating suite: {e}")
     
         # creating and updating tests for each row
-        with st.spinner('Creating and updating tests as per CSV ...'):
+        with st.spinner('Creating and updating tests as per uploaded CSV ...'):
             for index, row in df.iterrows():
                 test_params = {}
                 test_params['test_id'] = row['clone-test-id']
@@ -98,6 +98,5 @@ if csv_payload is not None:
                 test_params['start_url'] = row['starting-url'].replace("$baseUrl", base_url)
                 test_params['suite_id'] = new_suite_id
                 
-                new_test_id = gi.duplicate_test(test_params['test_id'], api_key)
-                gi.update_test(new_test_id, test_params, api_key)
+                tests = gi.Tests(test_params, api_key)
         st.success(f"Suite created and populated with tests successfully!")
