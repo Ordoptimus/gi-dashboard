@@ -91,4 +91,31 @@ class Tests:
         except Exception as e:
             print(f"Error duplicating suite: {e}")
             return e
-    
+
+
+class Organisations:
+    def __init__(self, api_key) -> None:
+        self.api_key = api_key
+        self.all_orgs = self.list_orgs()
+
+    def list_orgs(self) -> dict:
+        '''
+        Lists all organisations available to the user
+        '''
+        api_endpoint = f"https://api.ghostinspector.com/v1/organizations/?apiKey={self.api_key}"
+        try:
+            response = requests.get(api_endpoint.format(self.api_key))
+            response_json = response.json()
+
+            org_dict = {}
+            for org in response_json["data"]:
+                org_id = org.get("_id")
+                org_name = org.get("name")
+                if org_id and org_name:
+                    org_dict[org_name] = org_id
+            
+            return org_dict
+        
+        except Exception as e:
+            print(f"Error listing organisations: {e}")
+            return e

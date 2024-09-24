@@ -11,15 +11,32 @@ st.set_page_config(
 # Streamlit page title
 st.title("Ghost Inspector: Suite Creator")
 
-# Input field for API key
-api_key = st.sidebar.text_input("Enter your API key:")
+with st.sidebar:
+    # Input field for API key
+    api_key = st.text_input("Enter your API key:")
 
-# Input field for Organisation ID
-org_id = st.sidebar.text_input("Enter your Organisation ID:")
-st.sidebar.info('The API key can be found at https://app.ghostinspector.com/account \
-                under the Details section. \
-                \n\nThe Organisation ID can be found at https://app.ghostinspector.com/account/organizations \
-                by clicking on one of the available organisations there.')
+    if not api_key:
+        st.info('The API key can be found at https://app.ghostinspector.com/account \
+                        under the Details section.')
+
+    # fetching list of organisations
+    organisations = gi.Organisations(api_key)
+    st.session_state.all_orgs = organisations.all_orgs
+
+    # alert box to prompt for API key beofre showing org dropdown
+    if isinstance(st.session_state.all_orgs, dict) is False:
+        st.session_state.all_orgs = None
+        st.info("Please add your API key above to select organisation.")
+
+    if 'all_orgs' in st.session_state and st.session_state.all_orgs is not None:
+        # Organisations dropdown
+        org_options = sorted([org for org in st.session_state.all_orgs.keys()])
+        st.session_state.selected_org = st.selectbox('Select organisation to house the new suite:', 
+                                                    org_options, 
+                                                    index=None, 
+                                                    placeholder="Expand dropdown ...",)
+        if st.session_state.selected_org:
+            org_id = st.session_state.all_orgs[st.session_state.selected_org]
 
 # Get user inputs
 suite_name = st.text_input("Suite Name")
@@ -99,4 +116,5 @@ if csv_payload is not None:
                 test_params['suite_id'] = new_suite_id
                 
                 tests = gi.Tests(test_params, api_key)
-        st.success(f"Suite created and populated with tests successfully!")
+        st.success(f"Suite created and populated with tests successfully! \
+                   \n\nAccess it at: https://app.ghostinspector.com/suites/{new_suite_id}")
