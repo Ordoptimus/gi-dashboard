@@ -2,19 +2,22 @@
 
 
 import streamlit as st
-import gi
+import api.results as gi
 
+st.set_page_config(
+    page_title="GI Dashboard"
+)
 
-# Streamlit app title
-st.title("Ghost Inspector Test Results")
+# Streamlit page title
+st.title("Ghost Inspector: Test Results")
 
 # info box to get user to input API key
-st.info('Enter your API key in the sidebar. \
-        You can get your key from https://app.ghostinspector.com/account \
-        under the Details section.', icon="ℹ️")
+st.info('Enter your API key in the sidebar.', icon="ℹ️")
 
 # Input field for API key
 api_key = st.sidebar.text_input("Enter your API key:")
+st.sidebar.info('The API key can be found at https://app.ghostinspector.com/account \
+        under the Details section.')
 
 # API calls
 if st.button("Connect to Ghost Inspector"):
@@ -57,6 +60,6 @@ if 'all_folders' in st.session_state and st.session_state.all_folders is not Non
 
                 if 'suite_result_df' in st.session_state:
                     st.header(st.session_state.selected_suite)
-                    st.write(st.session_state.suite_result_df)
+                    st.dataframe(st.session_state.suite_result_df, hide_index=True)
                 else:
                     st.error("Error fetching results. Please check your test ID and API key.")
