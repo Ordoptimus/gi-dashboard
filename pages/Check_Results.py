@@ -60,6 +60,6 @@ if 'all_folders' in st.session_state and st.session_state.all_folders is not Non
 
                 if 'suite_result_df' in st.session_state:
                     st.header(st.session_state.selected_suite)
-                    st.write(st.session_state.suite_result_df)
+                    st.dataframe(st.session_state.suite_result_df, hide_index=True)
                 else:
                     st.error("Error fetching results. Please check your test ID and API key.")
