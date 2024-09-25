@@ -14,6 +14,7 @@ st.title("Ghost Inspector: Suite Creator")
 with st.sidebar:
     # Input field for API key
     api_key = st.text_input("Enter your API key:")
+    org_id = None
 
     if not api_key:
         st.info('The API key can be found at https://app.ghostinspector.com/account \
@@ -44,10 +45,13 @@ base_url = st.text_input("Base URL")
 suite_description = st.text_area("Suite Description")
 
 # folder_id = st.text_input("Folder ID")
-st.session_state.all_folders = re.fetch_folders(api_key)
-if isinstance(st.session_state.all_folders, dict) is False:
+folders = re.Folders(api_key, org_id)
+st.session_state.all_folders = folders.all_folders
+
+# for cases where api_key and/or org_id are not provided yet
+if isinstance(st.session_state.all_folders, dict) is False or len(st.session_state.all_folders) < 1:
     st.session_state.all_folders = None
-    st.info("Please add your API key in the sidebar to pick folders.")
+    st.info("Please add your API key and organisation in the sidebar to pick folders.")
 
 if 'all_folders' in st.session_state and st.session_state.all_folders is not None:
     # Folders dropdown
