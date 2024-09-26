@@ -92,6 +92,6 @@ how_tab.markdown(
       is used to interface with the platform. _Users will need an account and potentially \
       a subscription of the service to generate an API key to be used here_.
     - This dashboard has been built using the [Streamlit](https://docs.streamlit.io) framework.
-    - Hosting has been provided by Streamlit's [Commmunity Cloud](https://share.streamlit.io) as open access.
+    - Hosting has been provided by Streamlit's [Community Cloud](https://share.streamlit.io) as open access.
     """
 )
