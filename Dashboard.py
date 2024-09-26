@@ -12,7 +12,7 @@ st.sidebar.info("Navigate to the required service above.")
 st.markdown(
     """
     Welcome to the Ghost Inspector Dashboard, a utility to enable bulk actions
-    and speed up user workflow on the [Ghost Inspector](https:app.ghostinspector.com)
+    and speed up user workflow on the [Ghost Inspector](https://app.ghostinspector.com)
     automated testing platform.
     """
 )
@@ -92,6 +92,6 @@ how_tab.markdown(
       is used to interface with the platform. _Users will need an account and potentially \
       a subscription of the service to generate an API key to be used here_.
     - This dashboard has been built using the [Streamlit](https://docs.streamlit.io) framework.
-    - Hosting has been provided by Streamlit's [Commmunity Cloud](https://share.streamlit.io) as open access.
+    - Hosting has been provided by Streamlit's [Community Cloud](https://share.streamlit.io) as open access.
     """
 )
