@@ -12,7 +12,7 @@ st.sidebar.info("Navigate to the required service above.")
 st.markdown(
     """
     Welcome to the Ghost Inspector Dashboard, a utility to enable bulk actions
-    and speed up user workflow on the [Ghost Inspector](https:app.ghostinspector.com)
+    and speed up user workflow on the [Ghost Inspector](https://app.ghostinspector.com)
     automated testing platform.
     """
 )
